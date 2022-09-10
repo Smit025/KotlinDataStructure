@@ -135,20 +135,30 @@ class BinaryTree {
     }
 
     fun levelOrderTraversal(node: TreeNode) {
-
-        var q = LinkedList<TreeNode>()
+        var q = LinkedList<TreeNode?>()
         q.add(node)
-        while(q.isNotEmpty()){
-            val current  = q.poll()
-            println(current.data)
-            if(current.left!=null){
+        q.add(null)
+        while (q.isNotEmpty()) {
+            val current = q.poll()
+            if (current == null) {
+                if (q.isEmpty()) {
+                    return
+                } else {
+                    q.add(null)
+                    println()
+                }
+            }
+            if (current != null) {
+                print(" " + current?.data)
+            }
+            if (current?.left != null) {
                 q.add(current.left!!)
             }
-            if(current.right!=null){
+            if (current?.right != null) {
                 q.add(current.right!!)
             }
         }
-    }
+    }  //Output : 10,4,3,5,15,12
 }
 
 fun main() {
