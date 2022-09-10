@@ -159,6 +159,19 @@ class BinaryTree {
             }
         }
     }  //Output : 10,4,3,5,15,12
+
+    fun levelOrderTraversalRecursive(node: TreeNode?, level: Int) {
+        if (node == null) {
+            return
+        }
+        if (level == 1) {
+            print(" "+node.data)
+        } else if (level > 1) {
+            levelOrderTraversalRecursive(node.left, level - 1)
+            levelOrderTraversalRecursive(node.right, level - 1)
+        }
+    }
+
 }
 
 fun main() {
@@ -183,5 +196,7 @@ fun main() {
         println("Height is  : ${findHeight(root)}")
         println("Max element in Binary tree is : ${findMax(root)}")
         root?.let { levelOrderTraversal(it) }
+        print("\nlevelOrderTraversalRecursive : ")
+        root?.let { levelOrderTraversalRecursive(root,2) }
     }
 }
