@@ -1,6 +1,7 @@
 package Tree
 
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.max
 
 class BinaryTree {
@@ -135,7 +136,7 @@ class BinaryTree {
     }
 
     fun levelOrderTraversal(node: TreeNode) {
-        var q = LinkedList<TreeNode?>()
+        val q = LinkedList<TreeNode?>()
         q.add(node)
         q.add(null)
         while (q.isNotEmpty()) {
@@ -165,13 +166,51 @@ class BinaryTree {
             return
         }
         if (level == 1) {
-            print(" "+node.data)
+            print(" " + node.data)
         } else if (level > 1) {
             levelOrderTraversalRecursive(node.left, level - 1)
             levelOrderTraversalRecursive(node.right, level - 1)
         }
     }
 
+    //LeftView Of Binary Tree
+    fun leftViewOfBinaryTree(node: TreeNode?) {
+        val list  = arrayListOf<TreeNode?>()
+        printLeftViewUtil(node, list, 0)
+        for(i in list){
+            print(" ${i?.data}")
+        }
+    }
+
+    private fun printLeftViewUtil(node: TreeNode?, list: ArrayList<TreeNode?>, level: Int) {
+        if (node == null) {
+            return
+        } else if (list.size == level) {
+            list.add(node)
+        }
+        printLeftViewUtil(node.left, list, level + 1)
+        printLeftViewUtil(node.right, list, level + 1)
+    }
+
+    //LeftView Of Binary Tree
+    fun rightViewOfBinaryTree(node: TreeNode?) {
+        val list = ArrayList<TreeNode>()
+        printRightViewUtil(node, list, 0)
+        for(i in list){
+            print(" ${i.data}")
+        }
+    }
+
+    private fun printRightViewUtil(node: TreeNode?, list: ArrayList<TreeNode>, level: Int) {
+        if (node == null) {
+            return
+        }
+        else if (list.size == level) {
+            list.add(node)
+        }
+        printRightViewUtil(node.right, list, level + 1)
+        printRightViewUtil(node.left, list, level + 1)
+    }
 }
 
 fun main() {
@@ -197,6 +236,10 @@ fun main() {
         println("Max element in Binary tree is : ${findMax(root)}")
         root?.let { levelOrderTraversal(it) }
         print("\nlevelOrderTraversalRecursive : ")
-        root?.let { levelOrderTraversalRecursive(root,2) }
+        root?.let { levelOrderTraversalRecursive(root, 2) }
+        print("\nLeft View of Binary Tree : ")
+        leftViewOfBinaryTree(root)
+        print("\nRight View of Binary Tree : ")
+        rightViewOfBinaryTree(root)
     }
 }
