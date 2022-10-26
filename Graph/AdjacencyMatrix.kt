@@ -1,20 +1,72 @@
-package Graph
+import Graph.Edge
+import Graph.EdgeType
+import Graph.Graphs
+import Graph.Vertex
 
-import AdjacencyMatrix
+class AdjacencyMatrix<T> : Graphs<T> {
 
-class AdjacencyList<T> : Graphs<T> {
-
-    private val adjacencies: HashMap<Vertex<T>, ArrayList<Edge<T>>> = HashMap()
+    private val vertices = arrayListOf<Vertex<T>>()
+    private val weights = arrayListOf<ArrayList<Double?>>()
 
     override fun createVertex(data: T): Vertex<T> {
-        val vertex = Vertex(adjacencies.count(), data)
-        adjacencies[vertex] = arrayListOf()
+        val vertex = Vertex(vertices.count(), data)
+        vertices.add(vertex)
+        weights.forEach {
+            it.add(null)
+        }
+        val row = ArrayList<Double?>(vertices.count())
+        repeat(vertices.count()) {
+            row.add(null)
+        }
+        weights.add(row)
         return vertex
     }
 
-    override fun addDirectedEdge(source: Vertex<T>, destination: Vertex<T>, weight: Double?) {
-        val edge = Edge(source, destination, weight)
-        adjacencies[source]?.add(edge)
+    override fun addDirectedEdge(
+        source: Vertex<T>,
+        destination: Vertex<T>,
+        weight: Double?
+    ) {
+        weights[source.index][destination.index] = weight
+    }
+
+    override fun edges(source: Vertex<T>): ArrayList<Edge<T>> {
+        val edges = arrayListOf<Edge<T>>()
+        (0 until weights.size).forEach { column ->
+            val weight = weights[source.index][column]
+            if (weight != null) {
+                edges.add(Edge(source, vertices[column], weight))
+            }
+        }
+        return edges
+    }
+
+    override fun weight(
+        source: Vertex<T>,
+        destination: Vertex<T>
+    ): Double? {
+        return weights[source.index][destination.index]
+    }
+
+    override fun toString(): String {
+        val verticesDescription = vertices
+            .joinToString(separator = "\n") { "${it.index}: ${it.data}" }
+
+        val grid = weights.map { row ->
+            buildString {
+                (0 until weights.size).forEach { columnIndex ->
+                    val value = row[columnIndex]
+                    if (value != null) {
+                        append("$value\t")
+                    } else {
+                        append("ø\t\t")
+                    }
+                }
+            }
+        }
+
+        val edgesDescription = grid.joinToString("\n")
+        return "$verticesDescription\n\n$edgesDescription"
     }
 
     override fun addUndirectedEdge(source: Vertex<T>, destination: Vertex<T>, weight: Double?) {
@@ -29,26 +81,10 @@ class AdjacencyList<T> : Graphs<T> {
         }
     }
 
-    override fun edges(source: Vertex<T>): ArrayList<Edge<T>> {
-        return adjacencies[source] ?: arrayListOf()
-    }
-
-    override fun weight(source: Vertex<T>, destination: Vertex<T>): Double? {
-        return edges(source).firstOrNull() { it.destination == destination }?.weight
-    }
-
-    override fun toString(): String {
-        return buildString { // 1
-            adjacencies.forEach { (vertex, edges) -> // 2
-                val edgeString = edges.joinToString{ it.destination.data.toString() } // 3
-                append("${vertex.data} ---> [ $edgeString ]\n") // 4
-            }
-        }
-    }
 }
 
 fun main(){
-    AdjacencyList<String>().let { graph ->
+    AdjacencyMatrix<String>().let { graph ->
         val singapore = graph.createVertex("Singapore")
         val tokyo = graph.createVertex("Tokyo")
         val hongKong = graph.createVertex("Hong Kong")
